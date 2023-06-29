@@ -1,56 +1,53 @@
-// Include api for currency change
-const api = "https://api.exchangerate-api.com/v4/latest/USD";
+let equal_pressed = 0;
+//Refer all buttons excluding AC and DEL
+let button_input = document.querySelectorAll(".input-button");
+//Refer input,equal,clear and erase
+let input = document.getElementById("input");
+let equal = document.getElementById("equal");
+let clear = document.getElementById("clear");
+let erase = document.getElementById("erase");
 
-// For selecting different controls
-let search = document.querySelector(".searchBox");
-let convert = document.querySelector(".convert");
-let fromCurrecy = document.querySelector(".from");
-let toCurrecy = document.querySelector(".to");
-let finalValue = document.querySelector(".finalValue");
-let finalAmount = document.getElementById("finalAmount");
-let resultFrom;
-let resultTo;
-let searchValue;
-
-// Event when currency is changed
-fromCurrecy.addEventListener('change', (event) => {
-	resultFrom = `${event.target.value}`;
-});
-
-// Event when currency is changed
-toCurrecy.addEventListener('change', (event) => {
-	resultTo = `${event.target.value}`;
-});
-
-search.addEventListener('input', updateValue);
-
-// Function for updating value
-function updateValue(e) {
-	searchValue = e.target.value;
-}
-
-// When user clicks, it calls function getresults
-convert.addEventListener("click", getResults);
-
-// Function getresults
-function getResults() {
-	fetch(`${api}`)
-		.then(currency => {
-			return currency.json();
-		}).then(displayResults);
-}
-
-// Display results after conversion
-function displayResults(currency) {
-	let fromRate = currency.rates[resultFrom];
-	let toRate = currency.rates[resultTo];
-	finalValue.innerHTML =
-		((toRate / fromRate) * searchValue).toFixed(2);
-	finalAmount.style.display = "block";
-}
-
-// When user click on reset button
-function clearVal() {
-	window.location.reload();
-	document.getElementsByClassName("finalValue").innerHTML = "";
+window.onload = () => {
+  input.value = "";
 };
+
+//Access each class using forEach
+button_input.forEach((button_class) => {
+  button_class.addEventListener("click", () => {
+    if (equal_pressed == 1) {
+      input.value = "";
+      equal_pressed = 0;
+    }
+    //display value of each button
+    input.value += button_class.value;
+  });
+});
+
+//Solve the user's input when clicked on equal sign
+equal.addEventListener("click", () => {
+  equal_pressed = 1;
+  let inp_val = input.value;
+  try {
+    //evaluate user's input
+    let solution = eval(inp_val);
+    //True for natural numbers
+    //false for decimals
+    if (Number.isInteger(solution)) {
+      input.value = solution;
+    } else {
+      input.value = solution.toFixed(2);
+    }
+  } catch (err) {
+    //If user has entered invalid input
+    alert("Invalid Input");
+  }
+});
+
+//Clear Whole Input
+clear.addEventListener("click", () => {
+  input.value = "";
+});
+//Erase Single Digit
+erase.addEventListener("click", () => {
+  input.value = input.value.substr(0, input.value.length - 1);
+});
